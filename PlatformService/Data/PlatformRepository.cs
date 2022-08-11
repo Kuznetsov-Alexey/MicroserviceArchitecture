@@ -21,7 +21,7 @@ public class PlatformRepository : IPlatformRepository
         return _context.Platforms.ToList();
     }
 
-    public Platform? GetPlatformById(int id)
+    public Platform GetPlatformById(int id)
     {
         var platform = _context.Platforms.FirstOrDefault(platform => platform.Id == id);
 

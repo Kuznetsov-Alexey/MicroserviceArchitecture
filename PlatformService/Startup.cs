@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PlatformService.Data;
+using PlatformService.SyncDataServices;
+using PlatformService.SyncDataServices.Http;
 
 namespace PlatformService;
 
@@ -20,6 +22,7 @@ public class Startup
         services.AddDbContext<AppDbContext>(opt => 
             opt.UseInMemoryDatabase("InMem"));
 
+        services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
         services.AddScoped<IPlatformRepository, PlatformRepository>();
         services.AddControllers();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -28,6 +31,8 @@ public class Startup
         {
             c.SwaggerDoc("v1", new OpenApiInfo {Title = "PlatformService", Version = "1.0"});
         });
+
+        Console.WriteLine($"--> CommandService Endpoint {Configuration["CommandService"]}");
     }
 
     public void Configure(IApplicationBuilder appBuilder, IWebHostEnvironment env)
