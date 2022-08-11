@@ -19,8 +19,18 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<AppDbContext>(opt => 
-            opt.UseInMemoryDatabase("InMem"));
+        if (_env.IsProduction())
+        {
+            Console.WriteLine("--> Using SqlServer Db");
+            services.AddDbContext<AppDbContext>(opt => 
+                opt.UseSqlServer(Configuration.GetConnectionString("PlatformsConn")));
+        }
+        else
+        {
+            Console.WriteLine("--> Using InMem Db");
+            services.AddDbContext<AppDbContext>(opt => 
+                opt.UseInMemoryDatabase("InMem"));
+        }
 
         services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
         services.AddScoped<IPlatformRepository, PlatformRepository>();
@@ -59,6 +69,6 @@ public class Startup
             // });
         });
         
-        PrepDb.PrepPopulation(appBuilder);
+        PrepDb.PrepPopulation(appBuilder, env.IsProduction());
     }
 }
