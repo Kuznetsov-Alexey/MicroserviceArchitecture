@@ -19,14 +19,15 @@ public class AppDbContext : DbContext
         
         modelBuilder
             .Entity<Platform>()
-            .HasMany<Command>()
+            .HasMany(platform => platform.Commands)
             .WithOne(command => command.Platform)
             .HasForeignKey(command => command.PlatformId);
 
         modelBuilder
             .Entity<Command>()
-            .HasOne<Platform>()
+            .HasOne(command => command.Platform)
             .WithMany(platform => platform.Commands)
-            .HasForeignKey(command => command.PlatformId);
+            .HasForeignKey(command => command.PlatformId)
+            .IsRequired();
     }
 }
