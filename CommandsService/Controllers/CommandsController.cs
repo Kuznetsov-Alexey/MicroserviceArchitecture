@@ -64,6 +64,6 @@ public class CommandsController : ControllerBase
 
         var commandReadDto = _mapper.Map<CommandReadDto>(command);
 
-        return CreatedAtRoute(nameof(GetCommandForPlatform), new {commandId = command.Id}, commandReadDto);
+        return CreatedAtRoute(nameof(GetCommandForPlatform), new {commandId = command.Id, platformId }, commandReadDto);
     }
 }
