@@ -3,6 +3,7 @@ using Microsoft.OpenApi.Models;
 using PlatformService.AsyncDataServices;
 using PlatformService.Data;
 using PlatformService.SyncDataServices;
+using PlatformService.SyncDataServices.Grpc;
 using PlatformService.SyncDataServices.Http;
 
 namespace PlatformService;
@@ -35,7 +36,7 @@ public class Startup
 
         services.AddHttpClient<ICommandDataClient, HttpCommandDataClient>();
         services.AddSingleton<IMessageBusClient, MessageBusClient>();
-
+        services.AddGrpc();
         services.AddScoped<IPlatformRepository, PlatformRepository>();
         services.AddControllers();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -56,7 +57,7 @@ public class Startup
             appBuilder.UseSwaggerUI();
         }
         
-        appBuilder.UseHttpsRedirection();
+        //appBuilder.UseHttpsRedirection();
 
         appBuilder.UseRouting();
         appBuilder.UseAuthorization();
@@ -64,12 +65,12 @@ public class Startup
         appBuilder.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
-            //endpoints.MapGrpcService<GrpcPlatformService>();
+            endpoints.MapGrpcService<GrpcPlatformService>();
 
-            // endpoints.MapGet("/protos/platforms.proto", async context =>
-            // {
-            //     await context.Response.WriteAsync(File.ReadAllText("Protos/platforms.proto"));
-            // });
+            endpoints.MapGet("/protos/platforms.proto", async context =>
+            {
+                await context.Response.WriteAsync(await File.ReadAllTextAsync("Protos/platforms.proto"));
+            });
         });
         
         PrepDb.PrepPopulation(appBuilder, env.IsProduction());
